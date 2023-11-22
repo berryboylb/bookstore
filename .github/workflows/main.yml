@@ -9,7 +9,6 @@ jobs:
   build:
     runs-on: ubuntu-latest
     env:
-      MONGODB_DATABASE_URL: ${{ secrets.MONGODB_DATABASE_URL }}
       MYSQL_DATABASE_URL: ${{ secrets.MYSQL_DATABASE_URL }}
 
     steps:
@@ -24,8 +23,6 @@ jobs:
     - name: Install Dependencies and Run Tests
       run: |
         npm install
-        npm run mongo:generate
-        npm run mongo:dbpush
         npm run test
 
   deploy:
