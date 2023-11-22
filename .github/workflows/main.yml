@@ -1,0 +1,43 @@
+name: Uptick
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      MONGODB_DATABASE_URL: ${{ secrets.MONGODB_DATABASE_URL }}
+      MYSQL_DATABASE_URL: ${{ secrets.MYSQL_DATABASE_URL }}
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v2
+
+    - name: Set Up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '20'
+
+    - name: Install Dependencies and Run Tests
+      run: |
+        npm install
+        npm run mongo:generate
+        npm run mongo:dbpush
+        npm run test
+
+  deploy:
+    runs-on: ubuntu-latest
+
+    needs: build
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v2
+
+    - name: Deploy to Production
+      run: npm run start
+
